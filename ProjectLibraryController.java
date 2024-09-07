@@ -20,13 +20,16 @@ import com.rajutech.project.dao.model.LoggedInUserDetails;
 import com.rajutech.project.exception.POTException;
 import com.rajutech.project.request.MaterialRestrictionRequest;
 import com.rajutech.project.request.ProjectEmployeeClassRequest;
+import com.rajutech.project.request.ProjectPlantClassRequest;
 import com.rajutech.project.request.WarehouseStockyardRequest;
 import com.rajutech.project.response.ProjWarehouseStockyardResponse;
 import com.rajutech.project.response.ProjectEmployeeClassificationResponse;
 import com.rajutech.project.response.ProjectMaterialTransferRestrictionResponse;
+import com.rajutech.project.response.ProjectPlantClassificationResponse;
 import com.rajutech.project.response.Response;
 import com.rajutech.project.service.ProjectEmployeeClassficationService;
 import com.rajutech.project.service.ProjectMaterialTransferRestrictionService;
+import com.rajutech.project.service.ProjectPlantClassficationService;
 import com.rajutech.project.service.WarehouseStockyardService;
 import com.rajutech.project.util.AppUtil;
 
@@ -52,6 +55,8 @@ public class ProjectLibraryController  extends BaseController{
 	private  ProjectMaterialTransferRestrictionService _projectMaterialTransferRestrictionService;
 
 	private WarehouseStockyardService warehouseStockyardService;
+
+	private ProjectPlantClassficationService projectPlantClassficationService;
 	
 	//================================================================================================
 	
@@ -292,8 +297,74 @@ public class ProjectLibraryController  extends BaseController{
 	    return getOKResponseEntity(response);
 	}
 
+	//===========================================================================================
 	
-	
-	
+	@Operation(summary = "Get All Project Plant Classifications", 
+	           description = "This service is used for fetching all plant classifications for a specific project based on their status.")
+	@ApiResponses({
+	    @ApiResponse(responseCode = "200", 
+	                 description = "Project Plant Classifications fetched successfully", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "204", 
+	                 description = "No Project Plant Classifications found", 
+	                 content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@GetMapping(URLConstants.ProjectLibrary.GET_PROJ_PLANT_CLASSIFICATION)
+	public ResponseEntity<Response> getProjPlantClassification(
+	        @RequestParam(name = "projectId", required = true) Long projectId) throws POTException {
+	    
+	    Response response = null;
+	    LoggedInUserDetails loggedInUserDetails = getLoggedInUserDetails();
+	    List<ProjectPlantClassificationResponse> plantClassifications = null;
+	    plantClassifications = projectPlantClassficationService.getAllProjPlantClassification(loggedInUserDetails, projectId);
+	    if (AppUtil.isNotNull(plantClassifications)) {
+	        response = new Response(Constants.OK, "Project Plant Classifications fetched successfully.", plantClassifications);
+	    } else {
+	        response = new Response(Constants.NO_CONTENT, "No Project Plant Classifications found.", null);
+	    }
+	    return getOKResponseEntity(response);
+	}
 
+	//===================================================================================================
+	
+	@Operation(summary = "Save Project Plant Classification", 
+	           description = "This service is used to save multiple project plant classifications at once.")
+	@ApiResponses({
+	    @ApiResponse(responseCode = "200", 
+	                 description = "Project plant classifications saved successfully", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "400", 
+	                 description = "Invalid input provided", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "10025", 
+	                 description = "Data saving error", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "500", 
+	                 description = "Internal Server Error", 
+	                 content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PostMapping(URLConstants.ProjectLibrary.SAVE_PROJ_PLANT_CLASSIFICATION)
+	public ResponseEntity<Response> saveProjectPlantClassification(@Valid @RequestBody ProjectPlantClassRequest classificationRequests) throws POTException {
+	    Response response = null;
+	    LoggedInUserDetails loggedInUserDetails = getLoggedInUserDetails();
+	    if (AppUtil.isNotNull(classificationRequests.getClassificationList())) {
+	        Map<String, Object> isSaved = projectPlantClassficationService.saveAllProjectPlantClassifications(loggedInUserDetails, classificationRequests);
+	        Boolean status = (Boolean) isSaved.get("isSuccess");
+	        String message = (String) isSaved.get("message");
+	        
+	        if (status) {
+	            response = new Response(Constants.OK, "Project plant classifications saved successfully.", message);
+	        } else {
+	            response = new Response(Constants.DATA_SAVING_ERROR, "Failed to save project plant classifications.", message);
+	        }
+	    } else {
+	        response = new Response(Constants.INVALID_INPUT, "Invalid input provided. Please provide valid project plant classification requests.", null);
+	    }
+
+	    return getOKResponseEntity(response);
+	}
+
+	
 }

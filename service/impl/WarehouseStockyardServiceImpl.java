@@ -122,6 +122,8 @@ public class WarehouseStockyardServiceImpl implements WarehouseStockyardService 
 	    return responseMap;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	
 	// Helper method to create a new warehouse entity
 	private ProjStoreStockMstrEntity createWarehouseEntity(WarehouseStockyardListRequest request, LoggedInUserDetails loggedInUserDetails ,Long projectId) {
 	    return ProjStoreStockMstrEntity.builder()
@@ -135,6 +137,8 @@ public class WarehouseStockyardServiceImpl implements WarehouseStockyardService 
 	        .build();
 	}
 
+	//------------------------------------------------------------------------------
+	
 	// Helper method to update an existing warehouse entity
 	private void updateWarehouseEntity(ProjStoreStockMstrEntity existingEntity, WarehouseStockyardListRequest request, LoggedInUserDetails loggedInUserDetails) {
 	    existingEntity.setStockCode(request.getWareHouseCode());

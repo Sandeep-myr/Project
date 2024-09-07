@@ -15,37 +15,31 @@ public class URLConstants {
 	}
 
 	// ----------------------------------------------------------------
-	
-	
+
 	public class ProjectLibrary {
 		public static final String API_BASE = "/api/project/library";
-		
+
 		// Project Employee Classification APi's Start here --
-		
+
 		public static final String GET_PROJ_EMP_CLASSIFICATION = "/proj/emp/classification/get";
 		public static final String SAVE_PROJ_EMP_CLASSIFICATION = "/proj/emp/classification/save";
-		
+
 		// Project Material Transfer Restriction APi's Start here --
-		
+
 		public static final String GET_PROJ_MAT_TRANSFER_RESTRICTION = "/proj/mat/transfer/restrictions/get";
 		public static final String SAVE_PROJ_MAT_TRANSFER_RESTRICTION = "/proj/mat/transfer/restrictions/save";
-		
+
 		// Project Ware House And Stock Yard Restriction APi's Start here --
-		
+
 		public static final String GET_PROJ_WARE_AND_STOCK_YARD_LIST = "/proj/warehouse/list/get";
 		public static final String SAVE_PROJ_WARE_HOUSE_AND_STOCK_YARD_LIST = "/proj/warehouse/stockyard/list/save";
 		public static final String DEACTIVATE_WARE_HOUSE_AND_STOCK_YARD = "/warehouse/stockyard/deactivate";
-		
-		
-		
-		
-		
-		
-		
+
+		// Project Plant Classification APi's Start here --
+
+		public static final String GET_PROJ_PLANT_CLASSIFICATION = "/proj/plant/classification/get";
+		public static final String SAVE_PROJ_PLANT_CLASSIFICATION = "/proj/plant/classification/save";
+
 	}
-	
-	
-	
-	
 
 }

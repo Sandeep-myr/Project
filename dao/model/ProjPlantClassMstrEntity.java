@@ -3,6 +3,8 @@ package com.rajutech.project.dao.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,17 +16,28 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@GenericGenerator(name = "random_id", strategy = "com.rajutech.project.util.RandomIdGenerator")
 @Table(name = "proj_plant_classification_mstr")
 public class ProjPlantClassMstrEntity implements Serializable {
 
 	private static final long serialVersionUID = -7469582437210724116L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "random_id")
 	@Column(name = "PPC_ID")
-	private Long id;
+	private Long plantClassId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PPC_EPM_ID")

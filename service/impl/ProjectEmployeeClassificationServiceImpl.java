@@ -94,7 +94,6 @@ public class ProjectEmployeeClassificationServiceImpl  implements ProjectEmploye
 
 	//============================================================================================================================
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> saveAllProjectEmployeeClassifications(LoggedInUserDetails loggedInUserDetails, ProjectEmployeeClassRequest classificationRequests) throws POTException {
 	    Map<String, Object> responseMap = new LinkedHashMap<>();
