@@ -4,24 +4,37 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@GenericGenerator(name = "random_id", strategy = "com.rajutech.project.util.RandomIdGenerator")
 @Entity
 @Table(name = "proj_shifts_mstr")
 public class ProjWorkShiftMstrEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "random_id")
     @Column(name = "SHF_ID")
-    private Long id;
+    private Long workShiftId;
 
     @Column(name = "SHF_CODE")
     private String code;
@@ -50,15 +63,16 @@ public class ProjWorkShiftMstrEntity implements Serializable {
     @Column(name = "SHF_STATUS")
     private Integer status;
 
-    @Column(name = "SHF_CREATED_BY", updatable = false)
-    private String createdBy;
+    @ManyToOne
+    @JoinColumn(name = "SHF_CREATED_BY", updatable = false)
+    private UserMstrEntity createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "SHF_CREATED_ON", updatable = false)
     private Date createdOn;
-
-    @Column(name = "SHF_UPDATED_BY")
-    private String updatedBy;
+    @ManyToOne
+    @JoinColumn(name = "SHF_UPDATED_BY")
+    private UserMstrEntity updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "SHF_UPDATED_ON")

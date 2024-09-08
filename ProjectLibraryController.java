@@ -22,7 +22,9 @@ import com.rajutech.project.request.MaterialRestrictionRequest;
 import com.rajutech.project.request.ProjectEmployeeClassRequest;
 import com.rajutech.project.request.ProjectPlantClassRequest;
 import com.rajutech.project.request.WarehouseStockyardRequest;
+import com.rajutech.project.request.WorkShiftRequest;
 import com.rajutech.project.response.ProjWarehouseStockyardResponse;
+import com.rajutech.project.response.ProjWorkShiftResponse;
 import com.rajutech.project.response.ProjectEmployeeClassificationResponse;
 import com.rajutech.project.response.ProjectMaterialTransferRestrictionResponse;
 import com.rajutech.project.response.ProjectPlantClassificationResponse;
@@ -31,6 +33,7 @@ import com.rajutech.project.service.ProjectEmployeeClassficationService;
 import com.rajutech.project.service.ProjectMaterialTransferRestrictionService;
 import com.rajutech.project.service.ProjectPlantClassficationService;
 import com.rajutech.project.service.WarehouseStockyardService;
+import com.rajutech.project.service.WorkShiftService;
 import com.rajutech.project.util.AppUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +60,8 @@ public class ProjectLibraryController  extends BaseController{
 	private WarehouseStockyardService warehouseStockyardService;
 
 	private ProjectPlantClassficationService projectPlantClassficationService;
+
+	private WorkShiftService workShiftService;
 	
 	//================================================================================================
 	
@@ -365,6 +370,101 @@ public class ProjectLibraryController  extends BaseController{
 
 	    return getOKResponseEntity(response);
 	}
+
+	//====================================================================================
+	
+	@Operation(summary = "Get Project Work Shift List", 
+	           description = "This service is used for fetching all project work shifts based on their status.")
+	@ApiResponses({
+	    @ApiResponse(responseCode = "200", 
+	                 description = "Project Work Shift List fetched successfully", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "204", 
+	                 description = "No Project Work Shifts found", 
+	                 content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@GetMapping(URLConstants.ProjectLibrary.GET_PROJ_WORK_SHIFT_LIST)
+	public ResponseEntity<Response> getProjWorkShiftList(@RequestParam(name = "projectId", required = true) Long projectId, 
+	                                                     @RequestParam(name = "status", required = true) Integer status) throws POTException {
+	    Response response = null;
+	    LoggedInUserDetails loggedInUserDetails = getLoggedInUserDetails();
+	    List<ProjWorkShiftResponse> workShiftResponse = workShiftService.getProjWorkShiftList(loggedInUserDetails, status, projectId);
+	    if (AppUtil.isNotNull(workShiftResponse)) {
+	        response = new Response(Constants.OK, "Project Work Shift List fetched successfully.", workShiftResponse);
+	    } else {
+	        response = new Response(Constants.NO_CONTENT, "No Project Work Shifts found.", null);
+	    }
+	    
+	    return getOKResponseEntity(response);
+	}
+
+	//====================================================================================
+	
+	@Operation(summary = "Save Project Work Shift List", 
+	           description = "This service is used for saving project work shifts.")
+	@ApiResponses({
+	    @ApiResponse(responseCode = "200", 
+	                 description = "Project Work Shift List saved successfully", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "422", 
+	                 description = "Invalid input: Empty Data List", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "10025", 
+	                 description = "Data Not Saved", 
+	                 content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PostMapping(URLConstants.ProjectLibrary.SAVE_PROJ_WORK_SHIFT_LIST)
+	public ResponseEntity<Response> saveProjWorkShiftList(@Valid @RequestBody WorkShiftRequest workShiftRequest) throws POTException {
+	    Response response = null;
+	    
+	    if (workShiftRequest != null) {
+	        LoggedInUserDetails loggedInUserDetails = getLoggedInUserDetails();
+	        Map<String, Object> workShiftResponse = workShiftService.saveProjWorkShiftList(workShiftRequest, loggedInUserDetails);
+	        Boolean isSaved = (Boolean) workShiftResponse.get("isSuccess");
+	        String message = (String) workShiftResponse.get("message");
+	        
+	        if (isSaved) {
+	            response = new Response(Constants.OK, "Project Work Shift List saved successfully.", message);
+	        } else {
+	            response = new Response(Constants.DATA_SAVING_ERROR, "Data Not Saved", message);
+	        }
+	    } else {
+	        response = new Response(Constants.INVALID_INPUT, "Empty Data List", null);
+	    }
+	    
+	    return getOKResponseEntity(response);
+	}
+	
+	//================================================================================================
+	
+	@Operation(summary = "Deactivate or Activate Project Work Shifts", 
+	           description = "This service is used for deactivating or activating project work shifts based on their IDs and status.")
+	@ApiResponses({
+	    @ApiResponse(responseCode = "200", 
+	                 description = "Request Status Successfully Updated", 
+	                 content = @Content(schema = @Schema(implementation = Response.class))),
+	    @ApiResponse(responseCode = "10025", 
+	                 description = "Data Not Saved", 
+	                 content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@PutMapping(URLConstants.ProjectLibrary.DEACTIVATE_PROJ_WORK_SHIFT_LIST)
+	public ResponseEntity<Response> deactivateProjWorkShiftList(@RequestParam(name = "ids", required = true) List<Long> ids, 
+	                                                            @RequestParam(name = "status", required = true) Integer status) throws POTException {
+	    Response response = null;
+	    Boolean isDeactivated = workShiftService.deactivateProjWorkShiftList(ids, status);
+	    
+	    if (isDeactivated) {
+	        response = new Response(Constants.OK, "Request Status Successfully Updated", isDeactivated);
+	    } else {
+	        response = new Response(Constants.DATA_SAVING_ERROR, "Request Failed", null);
+	    }
+	    
+	    return getOKResponseEntity(response);
+	}
+
 
 	
 }

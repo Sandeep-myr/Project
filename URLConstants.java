@@ -39,6 +39,16 @@ public class URLConstants {
 
 		public static final String GET_PROJ_PLANT_CLASSIFICATION = "/proj/plant/classification/get";
 		public static final String SAVE_PROJ_PLANT_CLASSIFICATION = "/proj/plant/classification/save";
+		
+		// Project Work Shift APi's Start here --'
+		
+		public static final String GET_PROJ_WORK_SHIFT_LIST = "/proj/workshift/list/get";
+		public static final String SAVE_PROJ_WORK_SHIFT_LIST = "/proj/workshift/list/save";
+		public static final String DEACTIVATE_PROJ_WORK_SHIFT_LIST = "/proj/workshift/list/deactivate";
+		
+		
+		
+		
 
 	}
 
